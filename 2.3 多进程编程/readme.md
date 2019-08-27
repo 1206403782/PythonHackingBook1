@@ -202,14 +202,16 @@ def Foo(i):
 def Bar(arg):
     print('-->exec done:',arg)
  
-pool = Pool(5)  #允许进程池同时放入5个进程
- 
-for i in range(10):
-    pool.apply_async(func=Foo, args=(i,),callback=Bar)  #func子进程执行完后，才会执行callback，否则callback不执行（而且callback是由父进程来执行了）
- 
-print('end')
-pool.close()
-pool.join() #主进程等待所有子进程执行完毕。必须在close()或terminate()之后。
+if __name__ == "__main__":
+        pool = Pool(5)  #允许进程池同时放入5个进程
+        
+        for i in range(10):
+            pool.apply_async(func=Foo, args=(i,),callback=Bar)  #func子进程执行完后，才会执行callback，否则callback不执行（而且callback是由父进程来执行了）
+        
+        print('end')
+        pool.close()
+        pool.join() #主进程等待所有子进程执行完毕。必须在close()或terminate()之后。
+        
 ```
 
 进程池内部维护一个进程序列，当使用时，去进程池中获取一个进程，如果进程池序列中没有可供使用的进程，那么程序就会等待，直到进程池中有可用进程为止。在上面的程序中产生了10个进程，但是只能有5同时被放入进程池，剩下的都被暂时挂起，并不占用内存空间，等前面的五个进程执行完后，再执行剩下5个进程。
